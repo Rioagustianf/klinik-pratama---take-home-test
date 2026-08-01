@@ -1,41 +1,33 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from '@/components/ProtectedRoute';
-
-// Pages — will be created per feature in Fase 1+
-// import LoginPage from '@/features/auth/LoginPage';
-// import DashboardPage from '@/features/dashboard/DashboardPage';
-// import PatientsPage from '@/features/patients/PatientsPage';
-// import RegistrationsPage from '@/features/registrations/RegistrationsPage';
-// import QueuesPage from '@/features/queues/QueuesPage';
-// import MedicalRecordsPage from '@/features/medical-records/MedicalRecordsPage';
+import LoginPage from '@/features/auth/LoginPage';
+import RoleDashboardPage from '@/features/dashboard/pages/RoleDashboardPage';
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public */}
-      {/* <Route path="/login" element={<LoginPage />} /> */}
-      <Route path="/login" element={<div>Login Page — coming soon</div>} />
+      {/* Public Routes */}
+      <Route path="/login" element={<LoginPage />} />
 
-      {/* Protected — semua role */}
+      {/* Protected Routes — Semua Role */}
       <Route element={<ProtectedRoute />}>
-        {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
-        <Route path="/dashboard" element={<div>Dashboard — coming soon</div>} />
+        <Route path="/dashboard" element={<RoleDashboardPage />} />
       </Route>
 
-      {/* Protected — Admin & Petugas */}
+      {/* Protected Routes — Admin & Petugas */}
       <Route element={<ProtectedRoute allowedRoles={['Admin', 'Petugas']} />}>
-        {/* <Route path="/patients" element={<PatientsPage />} /> */}
-        {/* <Route path="/registrations" element={<RegistrationsPage />} /> */}
-        {/* <Route path="/queues" element={<QueuesPage />} /> */}
+        <Route path="/patients" element={<div>Master Pasien</div>} />
+        <Route path="/registrations" element={<div>Pendaftaran Kunjungan</div>} />
+        <Route path="/queues" element={<div>Antrean Harian</div>} />
       </Route>
 
-      {/* Protected — Dokter */}
+      {/* Protected Routes — Dokter */}
       <Route element={<ProtectedRoute allowedRoles={['Dokter']} />}>
-        {/* <Route path="/medical-records" element={<MedicalRecordsPage />} /> */}
+        <Route path="/medical-records" element={<div>Pemeriksaan Dokter (SOAP)</div>} />
       </Route>
 
-      {/* Fallback */}
-      <Route path="/unauthorized" element={<div>403 — Akses ditolak</div>} />
+      {/* Fallback Routes */}
+      <Route path="/unauthorized" element={<div className="p-8 text-center text-[#ba1a1a] font-bold">403 — Akses Ditolak (Peran Tidak Sesuai)</div>} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
