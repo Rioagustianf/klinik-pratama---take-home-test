@@ -1,7 +1,16 @@
-import { mysqlTable, serial, varchar, text, date, timestamp, int, double } from 'drizzle-orm/mysql-core';
+import {
+  mysqlTable,
+  serial,
+  varchar,
+  text,
+  date,
+  timestamp,
+  bigint,
+  double,
+} from 'drizzle-orm/mysql-core';
 import { relations } from 'drizzle-orm';
 
-// Tables 
+// Tables
 
 export const users = mysqlTable('users', {
   id: serial('id').primaryKey(),
@@ -18,9 +27,9 @@ export const polies = mysqlTable('polies', {
 
 export const doctors = mysqlTable('doctors', {
   id: serial('id').primaryKey(),
-  user_id: int('user_id').references(() => users.id).unique(),
+  user_id: bigint('user_id', { mode: 'number', unsigned: true }).references(() => users.id).unique(),
   nama: varchar('nama', { length: 255 }).notNull(),
-  poli_id: int('poli_id').references(() => polies.id).notNull(),
+  poli_id: bigint('poli_id', { mode: 'number', unsigned: true }).references(() => polies.id).notNull(),
 });
 
 export const patients = mysqlTable('patients', {
@@ -37,10 +46,10 @@ export const patients = mysqlTable('patients', {
 
 export const registrations = mysqlTable('registrations', {
   id: serial('id').primaryKey(),
-  patient_id: int('patient_id').references(() => patients.id).notNull(),
-  doctor_id: int('doctor_id').references(() => doctors.id).notNull(),
-  poli_id: int('poli_id').references(() => polies.id).notNull(),
-  created_by: int('created_by').references(() => users.id).notNull(),
+  patient_id: bigint('patient_id', { mode: 'number', unsigned: true }).references(() => patients.id).notNull(),
+  doctor_id: bigint('doctor_id', { mode: 'number', unsigned: true }).references(() => doctors.id).notNull(),
+  poli_id: bigint('poli_id', { mode: 'number', unsigned: true }).references(() => polies.id).notNull(),
+  created_by: bigint('created_by', { mode: 'number', unsigned: true }).references(() => users.id).notNull(),
   tanggal_kunjungan: date('tanggal_kunjungan').notNull(),
   jenis_pembayaran: varchar('jenis_pembayaran', { length: 50 }).notNull(), // 'Umum' | 'BPJS' | 'Asuransi'
   keluhan_awal: text('keluhan_awal'),
@@ -49,7 +58,7 @@ export const registrations = mysqlTable('registrations', {
 
 export const queues = mysqlTable('queues', {
   id: serial('id').primaryKey(),
-  registration_id: int('registration_id').references(() => registrations.id).unique().notNull(),
+  registration_id: bigint('registration_id', { mode: 'number', unsigned: true }).references(() => registrations.id).unique().notNull(),
   nomor_antrean: varchar('nomor_antrean', { length: 10 }).notNull(),
   status: varchar('status', { length: 50 }).notNull(),
   called_at: timestamp('called_at'),
@@ -57,7 +66,7 @@ export const queues = mysqlTable('queues', {
 
 export const medicalRecords = mysqlTable('medical_records', {
   id: serial('id').primaryKey(),
-  registration_id: int('registration_id').references(() => registrations.id).unique().notNull(),
+  registration_id: bigint('registration_id', { mode: 'number', unsigned: true }).references(() => registrations.id).unique().notNull(),
   subjective: text('subjective'),
   tekanan_darah: varchar('tekanan_darah', { length: 20 }),
   suhu: double('suhu'),
@@ -69,7 +78,7 @@ export const medicalRecords = mysqlTable('medical_records', {
 
 export const prescriptions = mysqlTable('prescriptions', {
   id: serial('id').primaryKey(),
-  medical_record_id: int('medical_record_id').references(() => medicalRecords.id).notNull(),
+  medical_record_id: bigint('medical_record_id', { mode: 'number', unsigned: true }).references(() => medicalRecords.id).notNull(),
   nama_obat: varchar('nama_obat', { length: 255 }).notNull(),
   dosis: varchar('dosis', { length: 50 }).notNull(),
   aturan_pakai: varchar('aturan_pakai', { length: 255 }).notNull(),
@@ -77,12 +86,12 @@ export const prescriptions = mysqlTable('prescriptions', {
 
 export const medicalActions = mysqlTable('medical_actions', {
   id: serial('id').primaryKey(),
-  medical_record_id: int('medical_record_id').references(() => medicalRecords.id).notNull(),
+  medical_record_id: bigint('medical_record_id', { mode: 'number', unsigned: true }).references(() => medicalRecords.id).notNull(),
   nama_tindakan: varchar('nama_tindakan', { length: 255 }).notNull(),
   catatan: text('catatan'),
 });
 
-// ─── Relations ────────────────────────────────────────────────────────────────
+// Relations
 
 export const usersRelations = relations(users, ({ many, one }) => ({
   doctor: one(doctors, { fields: [users.id], references: [doctors.user_id] }),

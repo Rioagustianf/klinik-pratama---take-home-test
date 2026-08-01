@@ -17,7 +17,7 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "drizzle-orm": "^1.0.0-rc.4",
+    "drizzle-orm": "^0.39.0",
     "express": "^4.22.2",
     "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^9.0.3",
@@ -26,5 +26,11 @@
   "devDependencies": {
     "drizzle-kit": "^0.31.0",
     "nodemon": "^3.1.14"
+  },
+  "allowScripts": {
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.1": true,
+    "bcrypt@6.0.0": true
   }
 }

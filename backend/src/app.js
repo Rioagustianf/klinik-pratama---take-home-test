@@ -1,4 +1,3 @@
-import 'express-async-errors';
 import express from 'express';
 import cors from 'cors';
 import router from './routes/index.js';
@@ -10,15 +9,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API Routes
-app.use(router);
-
 // Health Check
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({ success: true, message: 'Klinik Pratama API is running' });
 });
 
-// Global Error Handler
-app.use(errorHandler);
+// API Routes
+app.use('/api', router);
+
+// Global Error Handler (must have exactly 4 params for Express to recognize it)
+app.use((err, req, res, next) => {
+  errorHandler(err, req, res, next);
+});
 
 export default app;
