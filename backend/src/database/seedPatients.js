@@ -37,6 +37,15 @@ const generatePatientData = () => {
     ];
     const address = addresses[i % addresses.length] + ` RT/RW ${i + 1}/0${i + 1}`;
 
+    // created_at: 5 pasien pertama hari ini (agar DSH-02 akurat),
+    // sisanya tersebar di beberapa hari ke belakang.
+    const createdAt = new Date();
+    if (i < 5) {
+      // hari ini
+    } else {
+      createdAt.setDate(createdAt.getDate() - ((i - 5) % 14 + 1));
+    }
+
     patientList.push({
       no_rm: `RM${String(i + 1).padStart(5, '0')}`,
       nik,
@@ -45,6 +54,7 @@ const generatePatientData = () => {
       tanggal_lahir: birthDate,
       no_telp: phone,
       alamat: address,
+      created_at: createdAt,
     });
   }
 

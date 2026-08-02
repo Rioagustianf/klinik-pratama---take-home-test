@@ -42,6 +42,7 @@ export const patients = mysqlTable('patients', {
   no_telp: varchar('no_telp', { length: 50 }),
   alamat: text('alamat'),
   deleted_at: timestamp('deleted_at'),
+  created_at: timestamp('created_at').notNull().defaultNow(),
 });
 
 export const registrations = mysqlTable('registrations', {
