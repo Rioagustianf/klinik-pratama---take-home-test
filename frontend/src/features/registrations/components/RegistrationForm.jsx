@@ -19,7 +19,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { formatDateForInput } from "@/lib/utils";
+import { formatDateForInput, getTodayLocal } from "@/lib/utils";
 
 const registrationSchema = z.object({
   patient_id: z.coerce.number().min(1, "Pasien wajib dipilih"),
@@ -37,7 +37,7 @@ export function RegistrationForm({ patients, doctors, onSave, isLoading }) {
     defaultValues: {
       patient_id: "",
       doctor_id: "",
-      tanggal_kunjungan: new Date().toISOString().split("T")[0],
+      tanggal_kunjungan: getTodayLocal(),
       jenis_pembayaran: "Umum",
       keluhan_awal: "",
     },

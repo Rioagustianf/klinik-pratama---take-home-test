@@ -28,7 +28,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { formatDateForInput } from "@/lib/utils";
+import { formatDateForInput, getTodayLocal } from "@/lib/utils";
 
 const patientSchema = z.object({
   nik: z
@@ -216,7 +216,7 @@ export function PatientFormModal({
                             {...field}
                             type="date"
                             value={formatDateForInput(field.value)}
-                            max={new Date().toISOString().split("T")[0]}
+                            max={getTodayLocal()}
                           />
                         </FormControl>
                         <FormMessage />

@@ -5,6 +5,7 @@ import { CalendarDays } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getNavItems } from "@/features/dashboard/config/roles";
 import DashboardLayout from "@/features/dashboard/components/DashboardLayout";
+import { getTodayLocal } from "@/lib/utils";
 import { patientsApi } from "@/features/patients/api/patientsApi";
 import { RegistrationForm } from "../components/RegistrationForm";
 import { RegistrationTable } from "../components/RegistrationTable";
@@ -26,9 +27,7 @@ const RegistrationsPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [tanggal, setTanggal] = useState(
-    new Date().toISOString().split("T")[0],
-  );
+  const [tanggal, setTanggal] = useState(getTodayLocal());
   const [status, setStatus] = useState("");
 
   const { data: patientsData } = useQuery({
