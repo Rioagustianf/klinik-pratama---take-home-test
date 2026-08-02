@@ -4,9 +4,14 @@ import { cn } from "@/lib/utils";
 
 const DropdownMenu = Menu.Root;
 
-const DropdownMenuTrigger = React.forwardRef(({ className, ...props }, ref) => (
+/**
+ * Base UI memakai prop `render`, bukan `asChild`, untuk komposisi.
+ * `asChild` diteruskan ke DOM dan menyebabkan <button> bersarang.
+ */
+const DropdownMenuTrigger = React.forwardRef(({ className, render, ...props }, ref) => (
   <Menu.Trigger
     ref={ref}
+    render={render}
     className={cn(
       "inline-flex items-center justify-center outline-none focus:outline-none",
       className,

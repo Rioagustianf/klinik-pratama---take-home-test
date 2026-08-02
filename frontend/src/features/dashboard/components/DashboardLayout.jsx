@@ -4,12 +4,12 @@ import SidebarNav from "./SidebarNav";
 import Topbar from "./Topbar";
 import { getNavItems } from "../config/roles";
 
-const DashboardLayout = ({ children, onLogout }) => {
+const DashboardLayout = ({ children, onLogout, navItems: navItemsProp }) => {
   const { user, logout } = useAuth();
 
   if (!user) return null;
 
-  const navItems = getNavItems(user.role);
+  const navItems = navItemsProp ?? getNavItems(user.role);
   const handleLogout = () => {
     if (typeof onLogout === "function") onLogout();
     logout();

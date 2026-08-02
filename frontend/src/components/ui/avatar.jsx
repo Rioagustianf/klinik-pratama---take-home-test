@@ -26,7 +26,7 @@ const Avatar = React.forwardRef(
       >
         <BaseAvatar.Image className="size-full object-cover" />
         <BaseAvatar.Fallback
-          delayMs={600}
+          delay={600}
           className={cn(
             'flex size-full items-center justify-center bg-primary-container/15 font-semibold uppercase text-brand-700',
             className
