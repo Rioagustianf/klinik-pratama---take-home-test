@@ -9,6 +9,7 @@ import DashboardLayout from "@/features/dashboard/components/DashboardLayout";
 import { queuesApi } from "@/features/queues/api/queuesApi";
 import { MedicalRecordTable } from "../components/MedicalRecordTable";
 import { SoapForm } from "../components/SoapForm";
+import { PatientHistory } from "../components/PatientHistory";
 import { useSubmitMedicalRecordMutation } from "../hooks/useMedicalRecords";
 
 const MedicalRecordsPage = () => {
@@ -18,6 +19,8 @@ const MedicalRecordsPage = () => {
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [examiningQueue, setExaminingQueue] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
+  const [historyPatientId, setHistoryPatientId] = useState(null);
+
   const { data: queuesData, isLoading: queuesLoading } = useQuery({
     queryKey: ["queues"],
     queryFn: () => queuesApi.getQueues(),
@@ -26,6 +29,8 @@ const MedicalRecordsPage = () => {
   });
 
   const allQueues = queuesData?.data ?? [];
+  // Hanya tampilkan antrean yang SIAP diperiksa: queue.status DAN
+  // registration.status sama-sama CheckIn / Pemeriksaan.
   const availableQueues = allQueues.filter(
     (q) =>
       (q.status === "CheckIn" || q.status === "Pemeriksaan") &&
@@ -48,6 +53,10 @@ const MedicalRecordsPage = () => {
     setSuccessMessage("");
   };
 
+  const handleShowHistory = (patientId) => {
+    setHistoryPatientId(patientId);
+  };
+
   const handleSubmitSoap = async (payload) => {
     await submitMutation.mutateAsync(payload);
     setSuccessMessage(
@@ -60,6 +69,7 @@ const MedicalRecordsPage = () => {
   const handleBack = () => {
     setExaminingQueue(null);
     setSelectedRegistration(null);
+    setHistoryPatientId(null);
     setSuccessMessage("");
   };
 
@@ -70,10 +80,12 @@ const MedicalRecordsPage = () => {
 
   const navItems = getNavItems(user?.role);
 
+  const showSoapForm = Boolean(selectedRegistration);
+  const showHistory = !showSoapForm && Boolean(historyPatientId);
+
   return (
     <DashboardLayout onLogout={handleLogout} navItems={navItems}>
       <div className="space-y-6">
-
         {successMessage && (
           <div
             role="status"
@@ -84,7 +96,7 @@ const MedicalRecordsPage = () => {
           </div>
         )}
 
-        {selectedRegistration ? (
+        {showSoapForm ? (
           <>
             <Button
               variant="ghost"
@@ -100,12 +112,18 @@ const MedicalRecordsPage = () => {
               isLoading={submitMutation.isPending}
             />
           </>
+        ) : showHistory ? (
+          <PatientHistory
+            patientId={historyPatientId}
+            onClose={() => setHistoryPatientId(null)}
+          />
         ) : (
           <MedicalRecordTable
             queues={availableQueues}
             isLoading={queuesLoading}
             onExamine={handleExamine}
             examiningId={examiningQueue?.id}
+            onHistory={handleShowHistory}
           />
         )}
       </div>

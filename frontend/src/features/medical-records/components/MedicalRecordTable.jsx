@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Stethoscope, ClipboardList } from "lucide-react";
+import { Stethoscope, ClipboardList, History } from "lucide-react";
 
 const STATUS_VARIANT = {
   CheckIn: "primary",
@@ -46,6 +46,7 @@ export function MedicalRecordTable({
   isLoading,
   onExamine,
   examiningId,
+  onHistory,
 }) {
   if (isLoading) return <LoadingSkeleton />;
   if (queues.length === 0) return <EmptyState />;
@@ -73,13 +74,23 @@ export function MedicalRecordTable({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-3 md:justify-end">
+          <div className="flex items-center justify-between gap-2 md:justify-end">
             <Badge
               variant={STATUS_VARIANT[queue.status] || "default"}
               className="font-semibold"
             >
               {queue.status}
             </Badge>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onHistory(queue.registration?.patient?.id)}
+              className="h-8 text-xs"
+            >
+              <History className="mr-1 size-3.5" />
+              Riwayat
+            </Button>
 
             <Button
               onClick={() => onExamine(queue)}

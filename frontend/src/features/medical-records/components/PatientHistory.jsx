@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { History, FileText, Pill, Activity } from "lucide-react";
+import { ArrowLeft, History, FileText, Pill, Activity } from "lucide-react";
+import { usePatientHistoryQuery } from "../hooks/useMedicalRecords";
 
 const LoadingSkeleton = () => (
   <div className="space-y-3">
@@ -39,120 +40,132 @@ const formatDate = (dateStr) => {
   return dateStr;
 };
 
-export function PatientHistory({ records = [], isLoading, onClose }) {
-  if (isLoading) return <LoadingSkeleton />;
-  if (records.length === 0) return <EmptyState />;
+/**
+ * Riwayat pemeriksaan pasien (EXM-05).
+ * Fetch sendiri via usePatientHistoryQuery — bisa dipakai di halaman dokter
+ * atau di modal detail pasien tanpa setup manual.
+ */
+export function PatientHistory({ patientId, onClose }) {
+  const { data, isLoading } = usePatientHistoryQuery(patientId);
+
+  const records = data?.data ?? [];
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold tracking-tight text-ink">
-          Riwayat Pemeriksaan
-        </h2>
-        {onClose && (
+      {onClose && (
+        <div className="flex items-center gap-2">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 rounded-md bg-brand-600 text-white hover:bg-brand-700 hover:text-white text-xs"
+            className="h-8 px-2 text-xs"
           >
-            Tutup
+            <ArrowLeft className="size-4" />
           </Button>
-        )}
-      </div>
-
-      {records.map((record) => (
-        <div
-          key={record.id}
-          className="rounded-[16px] border border-line bg-white p-4 shadow-[0_4px_12px_rgba(15,110,110,0.05)]"
-        >
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
-            <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-brand-600/10 text-brand-700">
-                <FileText className="size-4" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-ink">
-                  {record.doctor?.nama || "-"}
-                </p>
-                <p className="text-xs text-ink-soft">
-                  {formatDate(record.tanggal_kunjungan)} •{" "}
-                  {record.poli?.nama_poli}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-3 space-y-2 text-sm">
-            {record.subjective && (
-              <p>
-                <span className="font-semibold text-ink">S:</span>{" "}
-                <span className="text-ink-soft">{record.subjective}</span>
-              </p>
-            )}
-            {(record.tekanan_darah ||
-              record.suhu ||
-              record.berat_badan ||
-              record.tinggi_badan) && (
-              <p className="text-ink-soft">
-                <span className="font-semibold text-ink">O:</span> TD{" "}
-                {record.tekanan_darah || "-"} mmHg, Suhu {record.suhu ?? "-"}°C,
-                BB {record.berat_badan ?? "-"} kg, TB{" "}
-                {record.tinggi_badan ?? "-"} cm
-              </p>
-            )}
-            {record.diagnosa && (
-              <p>
-                <span className="font-semibold text-ink">A:</span>{" "}
-                <span className="text-ink-soft">{record.diagnosa}</span>
-              </p>
-            )}
-            {record.rencana_terapi && (
-              <p>
-                <span className="font-semibold text-ink">P:</span>{" "}
-                <span className="text-ink-soft">{record.rencana_terapi}</span>
-              </p>
-            )}
-          </div>
-
-          {record.actions?.length > 0 && (
-            <div className="mb-3">
-              <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ink-muted">
-                <Activity className="size-3.5" /> Tindakan
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {record.actions.map((a) => (
-                  <span
-                    key={a.id}
-                    className="rounded-[8px] border border-line bg-surface px-2 py-1 text-xs text-ink-soft"
-                  >
-                    {a.nama_tindakan}
-                    {a.catatan ? ` — ${a.catatan}` : ""}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {record.prescriptions?.length > 0 && (
-            <div>
-              <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ink-muted">
-                <Pill className="size-3.5" /> Resep Obat
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {record.prescriptions.map((p) => (
-                  <span
-                    key={p.id}
-                    className="rounded-[8px] border border-line bg-surface px-2 py-1 text-xs text-ink-soft"
-                  >
-                    {p.nama_obat} — {p.dosis} ({p.aturan_pakai})
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+          <h2 className="text-lg font-bold tracking-tight text-ink">
+            Riwayat Pemeriksaan
+          </h2>
         </div>
-      ))}
+      )}
+
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : records.length === 0 ? (
+        <EmptyState />
+      ) : (
+        records.map((record) => (
+          <div
+            key={record.id}
+            className="rounded-[16px] border border-line bg-white p-4 shadow-[0_4px_12px_rgba(15,110,110,0.05)]"
+          >
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-line pb-3">
+              <div className="flex items-center gap-2">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-brand-600/10 text-brand-700">
+                  <FileText className="size-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-ink">
+                    {record.doctor?.nama || "-"}
+                  </p>
+                  <p className="text-xs text-ink-soft">
+                    {formatDate(record.tanggal_kunjungan)} •{" "}
+                    {record.poli?.nama_poli}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-3 space-y-2 text-sm">
+              {record.subjective && (
+                <p>
+                  <span className="font-semibold text-ink">S:</span>{" "}
+                  <span className="text-ink-soft">{record.subjective}</span>
+                </p>
+              )}
+              {(record.tekanan_darah ||
+                record.suhu ||
+                record.berat_badan ||
+                record.tinggi_badan) && (
+                <p className="text-ink-soft">
+                  <span className="font-semibold text-ink">O:</span> TD{" "}
+                  {record.tekanan_darah || "-"} mmHg, Suhu {record.suhu ?? "-"}°C,
+                  BB {record.berat_badan ?? "-"} kg, TB{" "}
+                  {record.tinggi_badan ?? "-"} cm
+                </p>
+              )}
+              {record.diagnosa && (
+                <p>
+                  <span className="font-semibold text-ink">A:</span>{" "}
+                  <span className="text-ink-soft">{record.diagnosa}</span>
+                </p>
+              )}
+              {record.rencana_terapi && (
+                <p>
+                  <span className="font-semibold text-ink">P:</span>{" "}
+                  <span className="text-ink-soft">{record.rencana_terapi}</span>
+                </p>
+              )}
+            </div>
+
+            {record.actions?.length > 0 && (
+              <div className="mb-3">
+                <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                  <Activity className="size-3.5" /> Tindakan
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {record.actions.map((a) => (
+                    <span
+                      key={a.id}
+                      className="rounded-[8px] border border-line bg-surface px-2 py-1 text-xs text-ink-soft"
+                    >
+                      {a.nama_tindakan}
+                      {a.catatan ? ` — ${a.catatan}` : ""}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {record.prescriptions?.length > 0 && (
+              <div>
+                <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                  <Pill className="size-3.5" /> Resep Obat
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {record.prescriptions.map((p) => (
+                    <span
+                      key={p.id}
+                      className="rounded-[8px] border border-line bg-surface px-2 py-1 text-xs text-ink-soft"
+                    >
+                      {p.nama_obat} — {p.dosis} ({p.aturan_pakai})
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }
