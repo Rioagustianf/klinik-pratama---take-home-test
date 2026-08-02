@@ -1,25 +1,28 @@
-import { db } from '../config/db.js';
-import { patients } from '../models/schema.js';
-import { eq, isNull, like, or, and, sql } from 'drizzle-orm';
+import { db } from "../config/db.js";
+import { patients } from "../models/schema.js";
+import { eq, isNull, like, or, and, sql } from "drizzle-orm";
 
 const generateNoRM = async () => {
   const result = await db
-    .select({ maxId: sql`MAX(CAST(SUBSTRING(no_rm, 3) AS UNSIGNED))` })
-    .from(patients)
-    .where(isNull(patients.deleted_at));
+    .select({ maxSuffix: sql`MAX(CAST(SUBSTRING(no_rm, 3) AS UNSIGNED))` })
+    .from(patients);
 
-  const maxId = result[0]?.maxId || 0;
-  const nextId = Number(maxId) + 1;
-  return `RM${String(nextId).padStart(5, '0')}`;
+  const maxSuffix = result[0]?.maxSuffix || 0;
+  const nextSuffix = Number(maxSuffix) + 1;
+  return `RM${String(nextSuffix).padStart(5, "0")}`;
 };
 
-export const findAllPatients = async ({ page = 1, limit = 10, search = '' }) => {
+export const findAllPatients = async ({
+  page = 1,
+  limit = 10,
+  search = "",
+}) => {
   const offset = (page - 1) * limit;
   const searchFilter = search
     ? or(
         like(patients.nama, `%${search}%`),
         like(patients.nik, `%${search}%`),
-        like(patients.no_rm, `%${search}%`)
+        like(patients.no_rm, `%${search}%`),
       )
     : undefined;
 
@@ -29,7 +32,10 @@ export const findAllPatients = async ({ page = 1, limit = 10, search = '' }) => 
 
   const [data, countResult] = await Promise.all([
     db.select().from(patients).where(whereClause).limit(limit).offset(offset),
-    db.select({ count: sql`COUNT(*)` }).from(patients).where(whereClause),
+    db
+      .select({ count: sql`COUNT(*)` })
+      .from(patients)
+      .where(whereClause),
   ]);
 
   const total = Number(countResult[0].count);
@@ -83,10 +89,14 @@ export const createPatient = async (data) => {
 export const updatePatient = async (id, data) => {
   const updateData = {};
   if (data.nama !== undefined) updateData.nama = data.nama.trim();
-  if (data.jenis_kelamin !== undefined) updateData.jenis_kelamin = data.jenis_kelamin;
-  if (data.tanggal_lahir !== undefined) updateData.tanggal_lahir = data.tanggal_lahir;
-  if (data.no_telp !== undefined) updateData.no_telp = data.no_telp ? data.no_telp.trim() : null;
-  if (data.alamat !== undefined) updateData.alamat = data.alamat ? data.alamat.trim() : null;
+  if (data.jenis_kelamin !== undefined)
+    updateData.jenis_kelamin = data.jenis_kelamin;
+  if (data.tanggal_lahir !== undefined)
+    updateData.tanggal_lahir = data.tanggal_lahir;
+  if (data.no_telp !== undefined)
+    updateData.no_telp = data.no_telp ? data.no_telp.trim() : null;
+  if (data.alamat !== undefined)
+    updateData.alamat = data.alamat ? data.alamat.trim() : null;
 
   await db
     .update(patients)
