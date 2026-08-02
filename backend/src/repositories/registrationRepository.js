@@ -185,10 +185,7 @@ export const findAllDoctors = async () => {
   return result;
 };
 
-// Cek apakah sudah ada kunjungan AKTIF utk pasien + dokter + tanggal yang sama.
-// Status aktif: Menunggu / CheckIn / Pemeriksaan (belum Batal/Selesai).
-// PRD 3.1: kontrol ulang atau poli lain di hari sama = registrasi baru terpisah,
-// tapi duplikat pasien-dokter-tanggal yang sama tidak boleh ditambahkan lagi.
+
 export const findActiveRegistration = async ({ patient_id, doctor_id, tanggal_kunjungan }) => {
   const result = await db
     .select()
@@ -280,13 +277,21 @@ export const createRegistrationWithQueue = async (data, createdBy) => {
   });
 };
 
-export const updateRegistrationStatus = async (id, newStatus) => {
-  await db
-    .update(registrations)
-    .set({ status: newStatus })
-    .where(eq(registrations.id, Number(id)));
 
-  return await findRegistrationById(id);
+export const updateRegistrationStatus = async (id, newStatus) => {
+  return await db.transaction(async (tx) => {
+    await tx
+      .update(registrations)
+      .set({ status: newStatus })
+      .where(eq(registrations.id, Number(id)));
+
+    await tx
+      .update(queues)
+      .set({ status: newStatus })
+      .where(eq(queues.registration_id, Number(id)));
+
+    return await findRegistrationById(id);
+  });
 };
 
 export const findAllQueues = async () => {
@@ -323,8 +328,9 @@ export const findAllQueues = async () => {
   return result;
 };
 
-export const findQueueById = async (id) => {
-  const result = await db
+export const findQueueById = async (id, conn) => {
+  const executor = conn || db;
+  const result = await executor
     .select({
       id: queues.id,
       registration_id: queues.registration_id,
@@ -368,7 +374,7 @@ export const callQueue = async (id) => {
       .set({ status: 'CheckIn' })
       .where(eq(registrations.id, queue.registration_id));
 
-    return await findQueueById(id);
+    return await findQueueById(id, tx);
   });
 };
 
@@ -391,6 +397,6 @@ export const updateQueueStatus = async (id, newStatus) => {
       .set({ status: newStatus })
       .where(eq(registrations.id, queue.registration_id));
 
-    return await findQueueById(id);
+    return await findQueueById(id, tx);
   });
 };
