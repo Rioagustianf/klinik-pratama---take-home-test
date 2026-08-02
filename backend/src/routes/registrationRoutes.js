@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  listDoctors,
   listRegistrations,
   detailRegistration,
   createRegistration,
@@ -12,6 +13,8 @@ import { verifyJWT, checkRole } from '../middlewares/auth.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 const router = Router();
+
+router.get('/doctors', verifyJWT, checkRole(['Admin', 'Petugas', 'Dokter']), asyncHandler(listDoctors));
 
 router.get('/registrations', verifyJWT, checkRole(['Admin', 'Petugas', 'Dokter']), asyncHandler(listRegistrations));
 router.get('/registrations/:id', verifyJWT, checkRole(['Admin', 'Petugas', 'Dokter']), asyncHandler(detailRegistration));

@@ -6,6 +6,7 @@ import {
   createRegistrationWithQueue,
   updateRegistrationStatus,
   findAllQueues,
+  findAllDoctors,
   callQueue,
   updateQueueStatus,
 } from '../repositories/registrationRepository.js';
@@ -13,6 +14,10 @@ import { canTransition } from '../validators/registrationValidator.js';
 
 export const getRegistrations = async (query) => {
   return await findAllRegistrations(query);
+};
+
+export const getDoctors = async () => {
+  return await findAllDoctors();
 };
 
 export const getRegistrationById = async (id) => {

@@ -6,6 +6,7 @@ import {
 import {
   getRegistrations,
   getRegistrationById,
+  getDoctors,
   createNewRegistration,
   updateRegistrationStatusService,
   getQueues,
@@ -23,6 +24,11 @@ export const listRegistrations = async (req, res) => {
 
   const result = await getRegistrations({ page, limit, tanggal, status, search });
   return sendSuccess(res, result, 'Daftar kunjungan berhasil diambil');
+};
+
+export const listDoctors = async (req, res) => {
+  const doctors = await getDoctors();
+  return sendSuccess(res, doctors, 'Daftar dokter berhasil diambil');
 };
 
 export const detailRegistration = async (req, res) => {

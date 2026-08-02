@@ -164,6 +164,21 @@ export const findDoctorById = async (id) => {
   return result[0] || null;
 };
 
+export const findAllDoctors = async () => {
+  const result = await db
+    .select({
+      id: doctors.id,
+      nama: doctors.nama,
+      poli: {
+        id: polies.id,
+        nama_poli: polies.nama_poli,
+      },
+    })
+    .from(doctors)
+    .leftJoin(polies, eq(doctors.poli_id, polies.id));
+  return result;
+};
+
 // Cek apakah sudah ada kunjungan AKTIF utk pasien + dokter + tanggal yang sama.
 // Status aktif: Menunggu / CheckIn / Pemeriksaan (belum Batal/Selesai).
 // PRD 3.1: kontrol ulang atau poli lain di hari sama = registrasi baru terpisah,
