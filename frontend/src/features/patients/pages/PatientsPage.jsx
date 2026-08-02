@@ -133,9 +133,6 @@ const PatientsPage = () => {
 
   const navItems = getNavItems(user?.role);
 
-  /**
-   * Helper to generate page numbers with ellipses for Shadcn Pagination
-   */
   const getPageNumbers = (current, total) => {
     if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
 

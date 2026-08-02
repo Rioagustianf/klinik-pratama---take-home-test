@@ -3,6 +3,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import LoginPage from '@/features/auth/LoginPage';
 import RoleDashboardPage from '@/features/dashboard/pages/RoleDashboardPage';
 import PatientsPage from '@/features/patients/pages/PatientsPage';
+import RegistrationsPage from '@/features/registrations/pages/RegistrationsPage';
 
 const AppRoutes = () => {
   return (
@@ -18,7 +19,7 @@ const AppRoutes = () => {
       {/* Protected Routes — Admin & Petugas */}
       <Route element={<ProtectedRoute allowedRoles={['Admin', 'Petugas']} />}>
         <Route path="/patients" element={<PatientsPage />} />
-        <Route path="/registrations" element={<div>Pendaftaran Kunjungan</div>} />
+        <Route path="/registrations" element={<RegistrationsPage />} />
         <Route path="/queues" element={<div>Antrean Harian</div>} />
       </Route>
 
