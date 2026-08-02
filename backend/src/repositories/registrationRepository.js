@@ -72,11 +72,17 @@ export const findAllRegistrations = async ({
             nama_poli: polies.nama_poli,
           },
         },
+        queue: {
+          id: queues.id,
+          nomor_antrean: queues.nomor_antrean,
+          status: queues.status,
+        },
       })
       .from(registrations)
       .leftJoin(patients, eq(registrations.patient_id, patients.id))
       .leftJoin(doctors, eq(registrations.doctor_id, doctors.id))
       .leftJoin(polies, eq(doctors.poli_id, polies.id))
+      .leftJoin(queues, eq(queues.registration_id, registrations.id))
       .where(whereClause)
       .limit(limit)
       .offset(offset),
