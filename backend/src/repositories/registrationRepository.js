@@ -7,6 +7,7 @@ import {
   polies,
 } from '../models/schema.js';
 import { eq, and, sql, like, or } from 'drizzle-orm';
+import { getTodayLocal } from '../utils/date.js';
 
 
 const generateQueueNumber = async (tx, tanggalKunjungan) => {
@@ -295,7 +296,7 @@ export const updateRegistrationStatus = async (id, newStatus) => {
 };
 
 export const findAllQueues = async () => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayLocal();
 
   const result = await db
     .select({
