@@ -1,13 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ClipboardList } from "lucide-react";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 
 const STATUS_VARIANT = {
   Menunggu: "warning",
@@ -17,8 +10,6 @@ const STATUS_VARIANT = {
   Batal: "destructive",
 };
 
-const ALL_STATUSES = ["Menunggu", "CheckIn", "Pemeriksaan", "Selesai", "Batal"];
-
 const formatDate = (dateStr) => {
   if (!dateStr) return "-";
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
@@ -27,21 +18,6 @@ const formatDate = (dateStr) => {
   }
   return dateStr;
 };
-
-const StatusSelect = ({ value, onChange, disabled }) => (
-  <Select value={value} onValueChange={onChange} disabled={disabled}>
-    <SelectTrigger className="h-9 w-36 text-xs">
-      <SelectValue />
-    </SelectTrigger>
-    <SelectContent>
-      {ALL_STATUSES.map((s) => (
-        <SelectItem key={s} value={s}>
-          {s}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-);
 
 const LoadingSkeleton = () => (
   <div className="space-y-3">
@@ -66,9 +42,7 @@ const EmptyState = () => (
       <ClipboardList className="w-6 h-6" />
     </div>
     <div className="space-y-1">
-      <h3 className="text-base font-semibold text-ink">
-        Belum ada kunjungan
-      </h3>
+      <h3 className="text-base font-semibold text-ink">Belum ada kunjungan</h3>
       <p className="text-xs text-ink-soft">
         Daftarkan kunjungan baru atau ubah filter pencarian.
       </p>
@@ -76,16 +50,13 @@ const EmptyState = () => (
   </div>
 );
 
-export function RegistrationTable({
-  registrations = [],
-  isLoading,
-  onUpdateStatus,
-}) {
+export function RegistrationTable({ registrations = [], isLoading }) {
   if (isLoading) return <LoadingSkeleton />;
   if (registrations.length === 0) return <EmptyState />;
 
   return (
     <div className="space-y-4">
+      {/* Desktop Table */}
       <div className="hidden md:block overflow-hidden rounded-xl border border-line bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
@@ -97,7 +68,6 @@ export function RegistrationTable({
                 <th className="py-3.5 px-4">Tanggal</th>
                 <th className="py-3.5 px-4">Pembayaran</th>
                 <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line text-ink font-normal">
@@ -110,7 +80,9 @@ export function RegistrationTable({
                     {reg.queue?.nomor_antrean || "-"}
                   </td>
                   <td className="py-3.5 px-4">
-                    <div className="text-sm font-medium">{reg.patient?.nama}</div>
+                    <div className="text-sm font-medium">
+                      {reg.patient?.nama}
+                    </div>
                     <div className="text-xs text-ink-soft font-mono">
                       {reg.patient?.no_rm}
                     </div>
@@ -132,17 +104,10 @@ export function RegistrationTable({
                   <td className="py-3.5 px-4">
                     <Badge
                       variant={STATUS_VARIANT[reg.status] || "default"}
-                      className="font-semibold"
+                      className="font-semibold text-black"
                     >
                       {reg.status}
                     </Badge>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <StatusSelect
-                      value={reg.status}
-                      disabled={reg.status === "Batal" || reg.status === "Selesai"}
-                      onChange={(newStatus) => onUpdateStatus(reg, newStatus)}
-                    />
                   </td>
                 </tr>
               ))}
@@ -151,6 +116,7 @@ export function RegistrationTable({
         </div>
       </div>
 
+      {/* Mobile Card View */}
       <div className="grid grid-cols-1 gap-3 md:hidden">
         {registrations.map((reg) => (
           <div
@@ -193,15 +159,6 @@ export function RegistrationTable({
                 </p>
               )}
             </div>
-
-            {reg.status !== "Batal" && reg.status !== "Selesai" && (
-              <div className="pt-2 border-t border-line flex justify-end">
-                <StatusSelect
-                  value={reg.status}
-                  onChange={(newStatus) => onUpdateStatus(reg, newStatus)}
-                />
-              </div>
-            )}
           </div>
         ))}
       </div>

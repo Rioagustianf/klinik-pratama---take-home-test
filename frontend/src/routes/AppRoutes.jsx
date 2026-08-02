@@ -4,6 +4,7 @@ import LoginPage from '@/features/auth/LoginPage';
 import RoleDashboardPage from '@/features/dashboard/pages/RoleDashboardPage';
 import PatientsPage from '@/features/patients/pages/PatientsPage';
 import RegistrationsPage from '@/features/registrations/pages/RegistrationsPage';
+import QueuesPage from '@/features/queues/pages/QueuesPage';
 
 const AppRoutes = () => {
   return (
@@ -20,7 +21,7 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute allowedRoles={['Admin', 'Petugas']} />}>
         <Route path="/patients" element={<PatientsPage />} />
         <Route path="/registrations" element={<RegistrationsPage />} />
-        <Route path="/queues" element={<div>Antrean Harian</div>} />
+        <Route path="/queues" element={<QueuesPage />} />
       </Route>
 
       {/* Protected Routes — Dokter */}

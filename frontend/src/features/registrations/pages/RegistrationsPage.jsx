@@ -12,7 +12,6 @@ import {
   useRegistrationsQuery,
   useDoctorsQuery,
   useCreateRegistrationMutation,
-  useUpdateRegistrationStatusMutation,
 } from "../hooks/useRegistrations";
 
 const STATUS_OPTIONS = [
@@ -48,17 +47,9 @@ const RegistrationsPage = () => {
   const registrations = regData?.data?.data ?? [];
 
   const createMutation = useCreateRegistrationMutation();
-  const updateStatusMutation = useUpdateRegistrationStatusMutation();
 
   const handleCreate = async (payload) => {
     await createMutation.mutateAsync(payload);
-  };
-
-  const handleUpdateStatus = async (reg, newStatus) => {
-    await updateStatusMutation.mutateAsync({
-      id: reg.id,
-      data: { status: newStatus },
-    });
   };
 
   const handleLogout = () => {
@@ -108,7 +99,6 @@ const RegistrationsPage = () => {
         <RegistrationTable
           registrations={registrations}
           isLoading={isLoading}
-          onUpdateStatus={handleUpdateStatus}
         />
       </div>
     </DashboardLayout>
