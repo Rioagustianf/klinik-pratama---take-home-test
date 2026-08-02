@@ -5,6 +5,7 @@ import RoleDashboardPage from '@/features/dashboard/pages/RoleDashboardPage';
 import PatientsPage from '@/features/patients/pages/PatientsPage';
 import RegistrationsPage from '@/features/registrations/pages/RegistrationsPage';
 import QueuesPage from '@/features/queues/pages/QueuesPage';
+import MedicalRecordsPage from '@/features/medical-records/pages/MedicalRecordsPage';
 
 const AppRoutes = () => {
   return (
@@ -26,7 +27,7 @@ const AppRoutes = () => {
 
       {/* Protected Routes — Dokter */}
       <Route element={<ProtectedRoute allowedRoles={['Dokter']} />}>
-        <Route path="/medical-records" element={<div>Pemeriksaan Dokter (SOAP)</div>} />
+        <Route path="/medical-records" element={<MedicalRecordsPage />} />
       </Route>
 
       {/* Fallback Routes */}
